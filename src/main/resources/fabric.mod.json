@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "clientmod",
+  "version": "${version}",
+  "name": "Client Mod",
+  "description": "HUD and visual modules with a glass menu. Open the menu with Left Ctrl.",
+  "authors": ["You"],
+  "icon": "assets/clientmod/icon.png",
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": { "client": ["com.clientmod.ClientModMain"] },
+  "mixins": [
+    { "config": "clientmod.mixins.json", "environment": "client" },
+    { "config": "clientmod.extra.mixins.json", "environment": "client" }
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "minecraft": "1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

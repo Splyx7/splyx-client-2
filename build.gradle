@@ -1,0 +1,47 @@
+plugins {
+    id 'fabric-loom' version "${loom_version}"
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base { archivesName = project.archives_base_name }
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") { expand "version": project.version }
+}
+
+tasks.withType(JavaCompile).configureEach { it.options.release = 21 }
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+// Optional OneConfig bridge: build with  gradle build -Poneconfig
+if (project.hasProperty('oneconfig')) {
+    sourceSets.main.java.srcDir 'src/oneconfig/java'
+    repositories {
+        mavenCentral()
+        maven { url = 'https://repo.polyfrost.org/releases' }
+    }
+    dependencies {
+        // OneConfig's UI libraries (Compose, Skiko, ...) are only needed at runtime, where the installed
+        // OneConfig mod provides them, so they are left out of the compile classpath.
+        modImplementation("org.polyfrost.oneconfig:${project.minecraft_version}-fabric:${project.oneconfig_version}") {
+            ['org.jetbrains.skiko', 'maven.modrinth', 'androidx.annotation', 'androidx.collection',
+             'androidx.compose.runtime', 'androidx.graphics', 'androidx.lifecycle', 'androidx.navigation',
+             'androidx.navigationevent', 'androidx.savedstate'].each { g -> exclude group: g }
+        }
+    }
+}
